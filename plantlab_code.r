@@ -16,8 +16,6 @@ install.packages("multcomp")
 library(multcomp)
 
 # create a boxplot for visualization: 
-
-
 pdf("Seed_ratio.pdf",
     width = 8, height = 7, # Width and height in inches
     bg = "white",          # Background color
