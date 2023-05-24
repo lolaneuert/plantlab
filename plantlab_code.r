@@ -7,13 +7,14 @@ library(readxl)
 lamium <- read_excel("poll_lim.xlsx")
 summary(lamium)
 
-# divide the dataset into the three patches
+# divide the dataset into the three patches for comparison
 group2 <- lamium[1:16,]
 group3 <- lamium[17:36,]
 group4 <- lamium[37:55,]
 
 # calculate ratio (actual number of seeds/max nr of seeds that this species can produce) to make plots easier to interpret
 Ratio <- lamium$Success/4
+# now do the same for the individual patches, in order to compare them
 Ratio2 <- group2$Success/4
 Ratio3 <- group3$Success/4
 Ratio4 <- group4$Success/4
@@ -21,7 +22,7 @@ Ratio4 <- group4$Success/4
 install.packages("multcomp")
 library(multcomp)
 
-# create a boxplot for visualization: 
+# create a boxplot of the ratio for visualization: 
 pdf("Seed_ratio.pdf",
     width = 8, height = 7, # Width and height in inches
     bg = "white",          # Background color
@@ -31,7 +32,7 @@ plot_ratio <- boxplot((Ratio[lamium$Test == "PS"]), (Ratio[lamium$Test == "N"]),
                       main = "Seeds/Tot Seeds")
 dev.off()
 
-# create boxplots for each of the patches
+# create boxplots for each of the patches and download it
 pdf("Seed_ratio_per_patch.pdf",
     width = 6, height = 10, # Width and height in inches
     bg = "white",          # Background color
@@ -64,14 +65,7 @@ ods # 3.23 this is to big so adjust family to "quasibinomial"
 
 model2 <- glm(cbind(lamium$Success, Failure) ~ lamium$Test, family = quasibinomial, data = lamium)
 ods2 <- model2$deviance/model2$df.residual
-ods2 # still 2.796?? shouldn't it be smaller?
-
-
-model3 <- glm(cbind(Seeds, Ovule_aborted) ~ Test, data = lamium, family = binomial)
-summary(model3)
-
-
-
+ods2 # still3.23, shouldn't it be smaller now that we adjusted it to quasibinomial?
 
 # use posthoc test to define between which groups differences are found, 
 install.packages("emmeans")
