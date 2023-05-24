@@ -7,14 +7,13 @@ library(readxl)
 lamium <- read_excel("poll_lim.xlsx")
 summary(lamium)
 
-# divide the dataset into the three patches for comparison
+# divide the dataset into the three patches
 group2 <- lamium[1:16,]
 group3 <- lamium[17:36,]
 group4 <- lamium[37:55,]
 
 # calculate ratio (actual number of seeds/max nr of seeds that this species can produce) to make plots easier to interpret
 Ratio <- lamium$Success/4
-# now do the same for the individual patches, in order to compare them
 Ratio2 <- group2$Success/4
 Ratio3 <- group3$Success/4
 Ratio4 <- group4$Success/4
@@ -22,34 +21,43 @@ Ratio4 <- group4$Success/4
 install.packages("multcomp")
 library(multcomp)
 
-# create a boxplot of the ratio for visualization: 
-pdf("Seed_ratio.pdf",
-    width = 8, height = 7, # Width and height in inches
-    bg = "white",          # Background color
-    paper = "A4")
-plot_ratio <- boxplot((Ratio[lamium$Test == "PS"]), (Ratio[lamium$Test == "N"]), 
-                      names = c("Pollen Supplementation", "Natural"), 
-                      main = "Seeds/Tot Seeds")
-dev.off()
+# create a boxplot for visualization: 
+library(ggplot2)
+library(viridis)
 
-# create boxplots for each of the patches and download it
-pdf("Seed_ratio_per_patch.pdf",
-    width = 6, height = 10, # Width and height in inches
-    bg = "white",          # Background color
-    paper = "A4")
-par(mfrow = c(3, 1))
-plot_2 <- boxplot((Ratio2[group2$Test == "PS"]), (Ratio2[group2$Test == "N"]), 
-                      names = c("Pollen Supplementation", "Natural"), 
-                      main = "Seeds/Tot Seeds in Patch 2")
+boxplot_ratio <- ggplot() +
+  geom_boxplot(aes(x = lamium$Test, y  = Ratio, fill = lamium$Test)) + 
+  labs(title = "Ratio between Seeds and Total Seeds", 
+     subtitle = "Comparison between natural state and pollen supplementation", 
+     x = "Treatment", y = "Ratio") +
+   scale_fill_viridis(discrete = T, alpha = 0.4)
 
-plot_3 <- boxplot((Ratio3[group3$Test == "PS"]), (Ratio3[group3$Test == "N"]), 
-                  names = c("Pollen Supplementation", "Natural"), 
-                  main = "Seeds/Tot Seeds in Patch 3")
+ggsave(filename = "boxplot_ratio.png", plot = boxplot_ratio, width = 7, height = 7)
 
-plot_4 <- boxplot((Ratio4[group4$Test == "PS"]), (Ratio4[group4$Test == "N"]), 
-                  names = c("Pollen Supplementation", "Natural"), 
-                  main = "Seeds/Tot Seeds in Patch 4")
-dev.off()
+# create boxplots for each of the patches
+boxplot_2 <- ggplot() +
+  geom_boxplot(aes(x = group2$Test, y  = Ratio2, fill = group2$Test)) + 
+  labs(title = "Ratio between Seeds and Total Seeds in Patch 2", 
+       subtitle = "Comparison between natural state and pollen supplementation", 
+       x = "Treatment", y = "Ratio") +
+  scale_fill_viridis(discrete = T, alpha = 0.4)
+
+boxplot_3 <- ggplot() +
+  geom_boxplot(aes(x = group3$Test, y  = Ratio3, fill = group3$Test)) + 
+  labs(title = "Ratio between Seeds and Total Seeds in Patch 3", 
+       subtitle = "Comparison between natural state and pollen supplementation", 
+       x = "Treatment", y = "Ratio") +
+  scale_fill_viridis(discrete = T, alpha = 0.4)
+
+boxplot_4 <- ggplot() +
+  geom_boxplot(aes(x = group4$Test, y  = Ratio4, fill = group4$Test)) + 
+  labs(title = "Ratio between Seeds and Total Seeds in Patch 4", 
+       subtitle = "Comparison between natural state and pollen supplementation", 
+       x = "Treatment", y = "Ratio") +
+  scale_fill_viridis(discrete = T, alpha = 0.4)
+
+patch_plots <- boxplot_2 / boxplot_3 / boxplot_4
+ggsave(filename = "boxplot_patches.png", plot = patch_plots, width = 7, height = 12)
 
 # calculate a t-test to see wether or not there are significant differences between the two treatments
 t.test(Ratio[lamium$Test == "PS"], Ratio[lamium$Test == "N"])
