@@ -1,4 +1,13 @@
-# ecological data on the pollination of flowering plants 
+#### LABORATORY OF PLANT CONSERVATION
+## TARLA MURPHY AND LOLA NEUERT
+## FLOWER VISITER OBSERVATIONS FROM THE ORTO BOTANICO, BOLOGNA
+## SPECIES OBSERVED: LAMIUM MACULATUM
+## MAY 2023
+
+#########################################
+
+#set working directory
+
 # load necessary libraries
 library(readxl)
 library(multcomp)
